@@ -1,7 +1,7 @@
 {
   "name": "ollama-code-fixer",
-  "displayName": "Ollama Code Fixer",
-  "description": "AI code fixer using local Ollama models in VS Code.",
+  "displayName": "Ollama Code Fixer - AI Coding Assistant",
+  "description": "Comprehensive AI-powered coding assistant using local Ollama models. Fix, optimize, explain, test, refactor code with 9 operations.",
   "version": "0.3.0",
   "publisher": "WaiperOK",
   "author": {
@@ -24,9 +24,25 @@
   },
   "categories": [
     "Programming Languages",
-    "Machine Learning",
+    "Machine Learning", 
     "Linters",
     "Other"
+  ],
+  "keywords": [
+    "ollama",
+    "ai",
+    "artificial intelligence",
+    "code assistant",
+    "code fixer", 
+    "code optimizer",
+    "code generator",
+    "refactoring",
+    "testing",
+    "security",
+    "llama",
+    "codellama",
+    "local ai",
+    "programming assistant"
   ],
   "activationEvents": [
     "onStartupFinished"
@@ -263,8 +279,8 @@
         },
         "ollamaCodeFixer.modelName": {
           "type": "string",
-          "default": "llama2",
-          "description": "The Ollama model to use (e.g., 'llama2', 'codellama', 'mistral'). Make sure it's pulled in Ollama."
+          "default": "codellama:7b",
+          "description": "The Ollama model to use (e.g., 'codellama:7b', 'llama2:7b', 'mistral:7b'). Make sure it's pulled in Ollama."
         },
         "ollamaCodeFixer.requestTimeout": {
           "type": "integer",
@@ -408,7 +424,7 @@
           "items": {
             "type": "string"
           },
-          "default": ["codellama:13b", "llama2:7b", "mistral:7b", "gemma:7b"],
+          "default": ["codellama:7b", "codellama:13b", "codegemma:7b", "llama2:7b", "mistral:7b"],
           "description": "List of preferred models for quick selection."
         },
         "ollamaCodeFixer.codePreviewTheme": {
