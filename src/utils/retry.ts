@@ -21,7 +21,9 @@ export class RetryManager {
             backoffMultiplier: config.get<number>('retryBackoffMultiplier', 1.5)
         };
         this.logger.debug('RetryManager initialized with options:', this.options);
-    }    async withRetry<T>(
+    }
+
+    async withRetry<T>(
         operation: () => Promise<T>,
         isRetryable: (error: any) => boolean = this.defaultIsRetryable
     ): Promise<T> {
@@ -59,7 +61,9 @@ export class RetryManager {
         }
 
         throw lastError;
-    }    private defaultIsRetryable(error: any): boolean {
+    }
+
+    private defaultIsRetryable(error: any): boolean {
         // Повторяем попытку при таймауте, сетевых ошибках или если сервер перегружен
         if (error instanceof AxiosError) {
             // Коды ошибок, которые стоит повторить

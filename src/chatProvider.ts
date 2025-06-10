@@ -3,15 +3,18 @@ import * as vscode from 'vscode';
 import axios, { AxiosError } from 'axios';
 import { getLocaleStrings } from './localization';
 import { RetryManager } from './utils/retry';
+import { Logger } from './utils/logger';
 
 export class OllamaCodeFixerChatProvider {
     private _panel: vscode.WebviewPanel | undefined;
     private _disposables: vscode.Disposable[] = [];
     private _strings = getLocaleStrings();
     private _retryManager: RetryManager;
+    private _logger: Logger;
 
     constructor(private readonly extensionUri: vscode.Uri) {
         this._retryManager = new RetryManager();
+        this._logger = Logger.getInstance();
     }
 
     public show() {
@@ -34,7 +37,9 @@ export class OllamaCodeFixerChatProvider {
 
             this._panel.onDidDispose(() => this.dispose(), null, this._disposables);
         }
-    }    private setupMessageHandling() {
+    }
+
+    private setupMessageHandling() {
         if (!this._panel) {
             return;
         }
@@ -59,7 +64,9 @@ export class OllamaCodeFixerChatProvider {
             undefined,
             this._disposables
         );
-    }    private async handleChatMessage(userMessage: string) {
+    }
+
+    private async handleChatMessage(userMessage: string) {
         if (!this._panel) {
             return;
         }
@@ -98,6 +105,8 @@ export class OllamaCodeFixerChatProvider {
                     ? error
                     : 'Произошла неизвестная ошибка';
                     
+            this._logger.error('Chat message handling error:', error);
+                    
             this._panel.webview.postMessage({
                 command: 'addMessage',
                 message: {
@@ -123,7 +132,7 @@ export class OllamaCodeFixerChatProvider {
             baseApiUrl = baseApiUrl.replace(/\/+$/, '');
         } catch (error: unknown) {
             const errorMessage = error instanceof Error ? error.message : this._strings.unknownError;
-            console.error(`[OllamaCodeFixer] ${this._strings.invalidUrl} ${baseApiUrl}: ${errorMessage}`);
+            this._logger.error(`${this._strings.invalidUrl} ${baseApiUrl}: ${errorMessage}`);
             baseApiUrl = 'http://localhost:11434';
         }
 
@@ -142,7 +151,7 @@ export class OllamaCodeFixerChatProvider {
             const availableModels = modelCheckResponse.data?.models || [];
             
             if (!availableModels.some((model: any) => model.name === modelName)) {
-                console.error(`[OllamaCodeFixer] ${this._strings.modelNotInstalled.replace('{0}', modelName)}`);
+                this._logger.error(`${this._strings.modelNotInstalled.replace('{0}', modelName)}`);
                 
                 const choice = await vscode.window.showErrorMessage(
                     this._strings.modelNotInstalled.replace('{0}', modelName),
@@ -170,7 +179,7 @@ export class OllamaCodeFixerChatProvider {
                 return this._strings.modelNotInstalled.replace('{0}', modelName);
             }
         } catch (error: unknown) {
-            console.error('[OllamaCodeFixer] Failed to check available models:', error);
+            this._logger.error('Failed to check available models:', error);
             if (error instanceof Error) {
                 vscode.window.showWarningMessage(`Failed to check models: ${error.message}`);
             }
@@ -198,11 +207,11 @@ export class OllamaCodeFixerChatProvider {
         };
 
         if (logLevel === 'debug') {
-            console.debug('[OllamaCodeFixer CHAT] Request details:');
-            console.debug(`- Base URL: ${baseApiUrl}`);
-            console.debug(`- Full URL: ${fullApiUrl}`);
-            console.debug(`- Model: ${modelName}`);
-            console.debug(`- Payload: ${JSON.stringify(payload, null, 2)}`);
+            this._logger.debug('Request details:');
+            this._logger.debug(`- Base URL: ${baseApiUrl}`);
+            this._logger.debug(`- Full URL: ${fullApiUrl}`);
+            this._logger.debug(`- Model: ${modelName}`);
+            this._logger.debug(`- Payload: ${JSON.stringify(payload, null, 2)}`);
         }
 
         try {
@@ -218,7 +227,7 @@ export class OllamaCodeFixerChatProvider {
             });
             
             if (logLevel === 'debug') {
-                console.debug(`[OllamaCodeFixer CHAT] Raw response from model: ${JSON.stringify(response.data, null, 2)}`);
+                this._logger.debug(`Raw response from model: ${JSON.stringify(response.data, null, 2)}`);
             }
 
             return response.data.message && response.data.message.content 
@@ -241,7 +250,7 @@ export class OllamaCodeFixerChatProvider {
                 }
                 
                 if (logLevel === 'debug') {
-                    console.error('[OllamaCodeFixer] Подробности ошибки API:', {
+                    this._logger.error('Подробности ошибки API:', {
                         message: error.message,
                         config: error.config,
                         response: error.response?.data
@@ -253,10 +262,12 @@ export class OllamaCodeFixerChatProvider {
                 errorMessage += 'Неизвестная ошибка';
             }
             
-            console.error('[OllamaCodeFixer] Error:', errorMessage);
+            this._logger.error('Error:', errorMessage);
             return errorMessage;
         }
-    }    private async applyCodeToEditor(code: string) {
+    }
+
+    private async applyCodeToEditor(code: string) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
             vscode.window.showErrorMessage(this._strings.noActiveEditor);
@@ -273,12 +284,13 @@ export class OllamaCodeFixerChatProvider {
         });
 
         vscode.window.showInformationMessage(this._strings.codeAppliedSuccess);
-    }    private async installOllamaModel(modelName: string): Promise<void> {
+    }
+
+    private async installOllamaModel(modelName: string): Promise<void> {
         const terminal = vscode.window.createTerminal('Ollama Model Installation');
         terminal.show();
         terminal.sendText(`ollama pull ${modelName}`);
         
-        // Показываем информационное сообщение
         vscode.window.showInformationMessage(
             this._strings.modelInstallProgress.replace('{0}', modelName),
             this._strings.understood
@@ -290,7 +302,7 @@ export class OllamaCodeFixerChatProvider {
             const response = await axios.get(`${baseUrl}/api/tags`);
             return response.data?.models?.map((m: any) => m.name) || [];
         } catch (error) {
-            console.error('[OllamaCodeFixer] Failed to fetch available models:', error);
+            this._logger.error('Failed to fetch available models:', error);
             return [];
         }
     }
@@ -307,8 +319,7 @@ export class OllamaCodeFixerChatProvider {
     }
 
     private getWebviewContent(): string {
-        return `
-        <!DOCTYPE html>
+        return `<!DOCTYPE html>
         <html lang="${this._strings.language}">
         <head>
             <meta charset="UTF-8">
@@ -593,7 +604,7 @@ export class OllamaCodeFixerChatProvider {
                     
                     let content = message.content;
                     
-                    // Обработка кода в сообщениях
+                    
                     content = content.replace(/\`\`\`([\\s\\S]*?)\`\`\`/g, (match, code) => {
                         return '<div class="code-block">' +
                                '<div class="code-actions">' +
@@ -619,7 +630,6 @@ export class OllamaCodeFixerChatProvider {
                     
                     sendBtn.disabled = loading;
                     
-                    // Удаляем предыдущий индикатор загрузки
                     const existingLoading = container.querySelector('.loading');
                     if (existingLoading) {
                         existingLoading.remove();
@@ -657,7 +667,6 @@ export class OllamaCodeFixerChatProvider {
                     });
                 }
 
-                // Обработка Enter для отправки сообщения
                 document.getElementById('messageInput').addEventListener('keydown', function(e) {
                     if (e.key === 'Enter' && !e.shiftKey) {
                         e.preventDefault();
@@ -665,7 +674,6 @@ export class OllamaCodeFixerChatProvider {
                     }
                 });
 
-                // Слушаем сообщения от расширения
                 window.addEventListener('message', event => {
                     const message = event.data;
                     switch (message.command) {
@@ -683,7 +691,9 @@ export class OllamaCodeFixerChatProvider {
             </script>
         </body>
         </html>`;
-    }    public dispose() {
+    }
+
+    public dispose() {
         while (this._disposables.length) {
             const disposable = this._disposables.pop();
             if (disposable) {

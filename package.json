@@ -2,9 +2,23 @@
   "name": "ollama-code-fixer",
   "displayName": "Ollama Code Fixer",
   "description": "AI code fixer using local Ollama models in VS Code.",
-  "version": "0.2.0",
-  "publisher": "waiper",
-  "icon": "icon.png",
+  "version": "0.3.0",
+  "publisher": "WaiperOK",
+  "author": {
+    "name": "WaiperOK",
+    "email": "waiperok.dev@gmail.com",
+    "url": "https://github.com/WaiperOK"
+  },
+  "icon": "images/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/WaiperOK/Ollama-Code-Fixer---AI-Coding-Assistant.git"
+  },
+  "bugs": {
+    "url": "https://github.com/WaiperOK/Ollama-Code-Fixer---AI-Coding-Assistant/issues"
+  },
+  "homepage": "https://github.com/WaiperOK/Ollama-Code-Fixer---AI-Coding-Assistant#readme",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -15,36 +29,106 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ollama-code-fixer.fixSelectedCode",
-    "onCommand:ollama-code-fixer.checkApiStatus",
-    "onCommand:ollama-code-fixer.openChat",
-    "onView:ollamaCodeFixerView"
+    "onStartupFinished"
   ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "ollama-code-fixer.fixSelectedCode",
-        "title": "Ollama: Fix Selected Code",
-        "category": "Ollama Code Fixer",
-        "icon": {
-          "light": "images/fix-light.png",
-          "dark": "images/fix-dark.png"
-        }
+        "title": "🔧 Fix Code",
+        "category": "Ollama AI",
+        "icon": "$(wrench)"
       },
       {
-        "command": "ollama-code-fixer.checkApiStatus",
-        "title": "Ollama: Check API Status",
-        "category": "Ollama Code Fixer"
+        "command": "ollama-code-fixer.optimizeCode",
+        "title": "⚡ Optimize Code",
+        "category": "Ollama AI",
+        "icon": "$(zap)"
+      },
+      {
+        "command": "ollama-code-fixer.explainCode",
+        "title": "📝 Explain Code",
+        "category": "Ollama AI",
+        "icon": "$(info)"
+      },
+      {
+        "command": "ollama-code-fixer.generateComments",
+        "title": "💬 Add Comments",
+        "category": "Ollama AI",
+        "icon": "$(comment)"
+      },
+      {
+        "command": "ollama-code-fixer.generateTests",
+        "title": "🧪 Generate Tests",
+        "category": "Ollama AI",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "ollama-code-fixer.refactorCode",
+        "title": "🔄 Refactor Code",
+        "category": "Ollama AI",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ollama-code-fixer.checkSecurity",
+        "title": "🔒 Security Check",
+        "category": "Ollama AI",
+        "icon": "$(shield)"
+      },
+      {
+        "command": "ollama-code-fixer.generateCode",
+        "title": "✨ Generate Code",
+        "category": "Ollama AI",
+        "icon": "$(sparkle)"
+      },
+      {
+        "command": "ollama-code-fixer.translateCode",
+        "title": "🌐 Translate Code",
+        "category": "Ollama AI",
+        "icon": "$(globe)"
       },
       {
         "command": "ollama-code-fixer.openChat",
-        "title": "Ollama: Open Chat",
-        "category": "Ollama Code Fixer",
-        "icon": {
-          "light": "images/chat-light.png",
-          "dark": "images/chat-dark.png"
-        }
+        "title": "💬 Open AI Chat",
+        "category": "Ollama AI",
+        "icon": "$(comment-discussion)"
+      },
+      {
+        "command": "ollama-code-fixer.checkApiStatus",
+        "title": "📡 Check API Status",
+        "category": "Ollama AI",
+        "icon": "$(pulse)"
+      },
+      {
+        "command": "ollama-code-fixer.startOllama",
+        "title": "🚀 Start Ollama Server",
+        "category": "Ollama AI",
+        "icon": "$(play)"
+      },
+      {
+        "command": "ollama-code-fixer.selectModel",
+        "title": "🎯 Select Model",
+        "category": "Ollama AI",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "ollama-code-fixer.installModel",
+        "title": "📥 Install Model",
+        "category": "Ollama AI",
+        "icon": "$(cloud-download)"
+      },
+      {
+        "command": "ollama-code-fixer.showInstalledModels",
+        "title": "📋 Show Models",
+        "category": "Ollama AI",
+        "icon": "$(list-unordered)"
+      },
+      {
+        "command": "ollama-code-fixer.changeLanguage",
+        "title": "🌐 Change Language",
+        "category": "Ollama AI",
+        "icon": "$(globe)"
       }
     ],
     "menus": {
@@ -52,12 +136,107 @@
         {
           "when": "editorHasSelection",
           "command": "ollama-code-fixer.fixSelectedCode",
-          "group": "navigation@5"
+          "group": "ollama@1"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.optimizeCode",
+          "group": "ollama@2"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.explainCode",
+          "group": "ollama@3"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.generateComments",
+          "group": "ollama@4"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.generateTests",
+          "group": "ollama@5"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.refactorCode",
+          "group": "ollama@6"
+        },
+        {
+          "when": "editorHasSelection",
+          "command": "ollama-code-fixer.checkSecurity",
+          "group": "ollama@7"
+        },
+        {
+          "when": "!editorHasSelection",
+          "command": "ollama-code-fixer.generateCode",
+          "group": "ollama@8"
         }
       ],
       "commandPalette": [
         {
+          "command": "ollama-code-fixer.fixSelectedCode",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.optimizeCode",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.explainCode",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.generateComments",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.generateTests",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.refactorCode",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.checkSecurity",
+          "when": "editorHasSelection"
+        },
+        {
+          "command": "ollama-code-fixer.generateCode",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.translateCode",
+          "when": "editorHasSelection"
+        },
+        {
           "command": "ollama-code-fixer.openChat",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.checkApiStatus",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.startOllama",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.selectModel",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.installModel",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.showInstalledModels",
+          "when": "true"
+        },
+        {
+          "command": "ollama-code-fixer.changeLanguage",
           "when": "true"
         }
       ]
@@ -67,9 +246,15 @@
       "properties": {
         "ollamaCodeFixer.language": {
           "type": "string",
-          "enum": ["en", "ru"],
+          "enum": ["en", "ru", "uk", "es"],
+          "enumDescriptions": [
+            "English",
+            "Русский", 
+            "Українська",
+            "Español"
+          ],
           "default": "en",
-          "description": "Interface language / Язык интерфейса"
+          "description": "Interface and chat language / Язык интерфейса и чата / Мова інтерфейсу та чату / Idioma de la interfaz y chat"
         },
         "ollamaCodeFixer.ollamaApiUrl": {
           "type": "string",
@@ -181,6 +366,56 @@
             "suffix": "\n```\n[/INST]\nCorrected Code Snippet:\n```\n"
           },
           "description": "Structure for prompts sent to Ollama with prefix and suffix."
+        },
+        "ollamaCodeFixer.autoApplyChanges": {
+          "type": "boolean",
+          "default": false,
+          "description": "Automatically apply AI suggestions without confirmation dialog."
+        },
+        "ollamaCodeFixer.showPreviewBeforeApply": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show preview diff before applying changes."
+        },
+        "ollamaCodeFixer.insertPosition": {
+          "type": "string",
+          "enum": ["replace", "above", "below", "newFile"],
+          "default": "replace",
+          "description": "Where to insert AI-generated code: replace selection, above, below, or in new file."
+        },
+        "ollamaCodeFixer.backupOriginalCode": {
+          "type": "boolean",
+          "default": true,
+          "description": "Create backup of original code before applying changes."
+        },
+        "ollamaCodeFixer.enableCodeLens": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens actions above functions and classes."
+        },
+        "ollamaCodeFixer.autoStartOllama": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically try to start Ollama server if it's not running."
+        },
+        "ollamaCodeFixer.ollamaPath": {
+          "type": "string",
+          "default": "ollama",
+          "description": "Path to ollama executable (if not in PATH)."
+        },
+        "ollamaCodeFixer.preferredModels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": ["codellama:13b", "llama2:7b", "mistral:7b", "gemma:7b"],
+          "description": "List of preferred models for quick selection."
+        },
+        "ollamaCodeFixer.codePreviewTheme": {
+          "type": "string",
+          "enum": ["auto", "light", "dark"],
+          "default": "auto",
+          "description": "Theme for code preview: auto (follow VS Code), light, or dark."
         }
       }
     },
@@ -208,7 +443,7 @@
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
-    "lint": "eslint src --ext ts",
+    "lint": "eslint src/**/*.ts",
     "test": "vscode-test"
   },
   "devDependencies": {

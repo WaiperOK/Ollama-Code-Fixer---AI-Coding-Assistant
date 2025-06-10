@@ -2,11 +2,12 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Extension",
+      "name": "Run Extension (Minimal)",
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--extensionDevelopmentPath=${workspaceFolder}"
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--new-window"
       ],
       "outFiles": [
         "${workspaceFolder}/dist/**/*.js"
@@ -14,9 +15,8 @@
       "preLaunchTask": "npm: compile",
       "stopOnEntry": false,
       "sourceMaps": true,
-      "smartStep": true,
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "restart": true,
+      "timeout": 20000
     }
   ]
-}
+} 
